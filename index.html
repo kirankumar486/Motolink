@@ -1,1 +1,171 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Motolink</title>
 
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: Arial, sans-serif;
+      background: #111;
+      color: white;
+      height: 100vh;
+      overflow: hidden;
+    }
+
+    .app {
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* Top bar */
+    .top-bar {
+      height: 60px;
+      background: #1c1c1c;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 18px;
+      border-bottom: 1px solid #333;
+    }
+
+    .logo {
+      font-size: 22px;
+      font-weight: bold;
+    }
+
+    .status {
+      font-size: 13px;
+      color: #4caf50;
+    }
+
+    /* Map */
+    .map {
+      flex: 1;
+      position: relative;
+      background:
+        linear-gradient(90deg, #222 1px, transparent 1px),
+        linear-gradient(#222 1px, transparent 1px);
+      background-size: 50px 50px;
+      overflow: hidden;
+    }
+
+    .map-text {
+      position: absolute;
+      top: 45%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      color: #777;
+      font-size: 18px;
+    }
+
+    /* Route */
+    .route {
+      position: absolute;
+      width: 70%;
+      height: 5px;
+      background: #2196f3;
+      top: 52%;
+      left: 15%;
+      transform: rotate(-18deg);
+      border-radius: 5px;
+    }
+
+    /* Motorcycle location */
+    .bike {
+      position: absolute;
+      top: 48%;
+      left: 48%;
+      font-size: 30px;
+    }
+
+    /* Bottom controls */
+    .controls {
+      height: 85px;
+      background: #1c1c1c;
+      display: flex;
+      align-items: center;
+      justify-content: space-around;
+      border-top: 1px solid #333;
+    }
+
+    .control {
+      text-align: center;
+      font-size: 12px;
+      color: #ccc;
+    }
+
+    .control-button {
+      width: 45px;
+      height: 45px;
+      border-radius: 50%;
+      border: none;
+      background: #333;
+      color: white;
+      font-size: 20px;
+      margin-bottom: 5px;
+    }
+
+    .control-button:active {
+      background: #555;
+    }
+  </style>
+</head>
+
+<body>
+
+  <div class="app">
+
+    <div class="top-bar">
+      <div class="logo">MOTOLINK</div>
+      <div class="status">● Connected</div>
+    </div>
+
+    <div class="map">
+
+      <div class="map-text">
+        MAP WILL APPEAR HERE
+      </div>
+
+      <div class="route"></div>
+
+      <div class="bike">🏍️</div>
+
+    </div>
+
+    <div class="controls">
+
+      <div class="control">
+        <button class="control-button">＋</button>
+        <div>Zoom</div>
+      </div>
+
+      <div class="control">
+        <button class="control-button">📍</button>
+        <div>Location</div>
+      </div>
+
+      <div class="control">
+        <button class="control-button">🧭</button>
+        <div>Navigate</div>
+      </div>
+
+      <div class="control">
+        <button class="control-button">⚙️</button>
+        <div>Settings</div>
+      </div>
+
+    </div>
+
+  </div>
+
+</body>
+</html>
