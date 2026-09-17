@@ -1,9 +1,17 @@
+```html
 <!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Motolink</title>
+
+  <title>MotoLink</title>
+
+  <!-- Leaflet Map -->
+  <link
+    rel="stylesheet"
+    href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+  />
 
   <style>
     * {
@@ -12,160 +20,885 @@
       padding: 0;
     }
 
+    html,
     body {
-      font-family: Arial, sans-serif;
-      background: #111;
-      color: white;
-      height: 100vh;
+      width: 100%;
+      height: 100%;
       overflow: hidden;
+      font-family: Arial, sans-serif;
     }
 
-    .app {
+    /* REAL MAP */
+    #map {
+      width: 100%;
       height: 100vh;
-      display: flex;
-      flex-direction: column;
+      z-index: 1;
     }
 
-    /* Top bar */
+    /* TOP BAR */
     .top-bar {
-      height: 60px;
-      background: #1c1c1c;
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 65px;
+
+      background: rgba(20, 20, 20, 0.95);
+
       display: flex;
       align-items: center;
       justify-content: space-between;
-      padding: 0 18px;
-      border-bottom: 1px solid #333;
+
+      padding: 0 20px;
+
+      z-index: 1000;
     }
 
     .logo {
-      font-size: 22px;
+      color: white;
+      font-size: 25px;
       font-weight: bold;
     }
 
-    .status {
-      font-size: 13px;
-      color: #4caf50;
+    .logo span {
+      color: #00d084;
     }
 
-    /* Map */
-    .map {
-      flex: 1;
-      position: relative;
-      background:
-        linear-gradient(90deg, #222 1px, transparent 1px),
-        linear-gradient(#222 1px, transparent 1px);
-      background-size: 50px 50px;
-      overflow: hidden;
-    }
-
-    .map-text {
-      position: absolute;
-      top: 45%;
-      left: 50%;
-      transform: translate(-50%, -50%);
-      color: #777;
-      font-size: 18px;
-    }
-
-    /* Route */
-    .route {
-      position: absolute;
-      width: 70%;
-      height: 5px;
-      background: #2196f3;
-      top: 52%;
-      left: 15%;
-      transform: rotate(-18deg);
-      border-radius: 5px;
-    }
-
-    /* Motorcycle location */
-    .bike {
-      position: absolute;
-      top: 48%;
-      left: 48%;
-      font-size: 30px;
-    }
-
-    /* Bottom controls */
-    .controls {
-      height: 85px;
-      background: #1c1c1c;
-      display: flex;
-      align-items: center;
-      justify-content: space-around;
-      border-top: 1px solid #333;
-    }
-
-    .control {
-      text-align: center;
-      font-size: 12px;
-      color: #ccc;
-    }
-
-    .control-button {
-      width: 45px;
-      height: 45px;
-      border-radius: 50%;
-      border: none;
-      background: #333;
+    .menu-button {
       color: white;
-      font-size: 20px;
+      font-size: 28px;
+      cursor: pointer;
+    }
+
+    /* SEARCH BAR */
+
+    .search-container {
+      position: absolute;
+
+      top: 80px;
+      left: 20px;
+      right: 20px;
+
+      z-index: 1000;
+    }
+
+    .search-box {
+      width: 100%;
+      height: 50px;
+
+      border: none;
+      outline: none;
+
+      border-radius: 25px;
+
+      padding: 0 20px;
+
+      font-size: 16px;
+
+      box-shadow: 0 3px 15px rgba(0,0,0,0.35);
+    }
+
+    /* MAP BUTTONS */
+
+    .map-controls {
+      position: absolute;
+
+      right: 20px;
+      bottom: 120px;
+
+      z-index: 1000;
+
+      display: flex;
+      flex-direction: column;
+
+      gap: 10px;
+    }
+
+    .map-button {
+      width: 52px;
+      height: 52px;
+
+      border: none;
+      border-radius: 50%;
+
+      background: white;
+
+      font-size: 24px;
+
+      cursor: pointer;
+
+      box-shadow: 0 3px 12px rgba(0,0,0,0.35);
+    }
+
+    .map-button:active {
+      transform: scale(0.95);
+    }
+
+    /* ROUTE PANEL */
+
+    .route-panel {
+      position: absolute;
+
+      left: 20px;
+      right: 20px;
+
+      bottom: 105px;
+
+      background: rgba(20,20,20,0.96);
+
+      color: white;
+
+      border-radius: 16px;
+
+      padding: 18px;
+
+      z-index: 1000;
+
+      display: none;
+
+      box-shadow: 0 4px 20px rgba(0,0,0,0.4);
+    }
+
+    .route-panel h3 {
+      margin-bottom: 8px;
+    }
+
+    .route-panel p {
+      color: #bbb;
+      font-size: 14px;
+    }
+
+    .start-button {
+      width: 100%;
+
+      margin-top: 15px;
+
+      padding: 13px;
+
+      border: none;
+      border-radius: 8px;
+
+      background: #00d084;
+
+      color: white;
+
+      font-size: 16px;
+      font-weight: bold;
+
+      cursor: pointer;
+    }
+
+    /* BOTTOM NAVIGATION */
+
+    .bottom-bar {
+      position: absolute;
+
+      bottom: 0;
+      left: 0;
+      right: 0;
+
+      height: 85px;
+
+      background: rgba(20,20,20,0.97);
+
+      display: flex;
+
+      justify-content: space-around;
+
+      align-items: center;
+
+      z-index: 1000;
+    }
+
+    .bottom-item {
+      color: #aaa;
+
+      text-align: center;
+
+      font-size: 12px;
+
+      cursor: pointer;
+    }
+
+    .bottom-item.active {
+      color: #00d084;
+    }
+
+    .bottom-icon {
+      display: block;
+
+      font-size: 25px;
+
       margin-bottom: 5px;
     }
 
-    .control-button:active {
-      background: #555;
+    /* GPS LOCATION MARKER */
+
+    .gps-marker {
+      width: 22px;
+      height: 22px;
+
+      background: #00d084;
+
+      border: 4px solid white;
+
+      border-radius: 50%;
+
+      box-shadow:
+        0 0 0 6px rgba(0,208,132,0.25),
+        0 0 15px rgba(0,208,132,0.8);
+    }
+
+    /* MENU */
+
+    .menu-panel {
+      position: absolute;
+
+      top: 65px;
+      right: 15px;
+
+      width: 220px;
+
+      background: rgba(20,20,20,0.97);
+
+      border-radius: 12px;
+
+      padding: 10px;
+
+      z-index: 2000;
+
+      display: none;
+
+      box-shadow: 0 4px 20px rgba(0,0,0,0.4);
+    }
+
+    .menu-item {
+      color: white;
+
+      padding: 14px;
+
+      border-bottom: 1px solid #333;
+
+      cursor: pointer;
+    }
+
+    .menu-item:last-child {
+      border-bottom: none;
+    }
+
+    .menu-item:hover {
+      background: #333;
+    }
+
+    /* LEAFLET CONTROL POSITION */
+
+    .leaflet-control-zoom {
+      display: none;
     }
   </style>
 </head>
 
 <body>
 
-  <div class="app">
+  <!-- REAL MAP -->
+  <div id="map"></div>
 
-    <div class="top-bar">
-      <div class="logo">MOTOLINK</div>
-      <div class="status">● Connected</div>
+
+  <!-- TOP BAR -->
+
+  <div class="top-bar">
+
+    <div class="logo">
+      Moto<span>Link</span>
     </div>
 
-    <div class="map">
+    <div
+      class="menu-button"
+      onclick="toggleMenu()">
+      ☰
+    </div>
 
-      <div class="map-text">
-        MAP WILL APPEAR HERE
-      </div>
+  </div>
 
-      <div class="route"></div>
 
-      <div class="bike">🏍️</div>
+  <!-- SEARCH -->
+
+  <div class="search-container">
+
+    <input
+      id="searchInput"
+      class="search-box"
+      type="text"
+      placeholder="Search destination..."
+      onkeypress="searchDestination(event)"
+    >
+
+  </div>
+
+
+  <!-- MENU -->
+
+  <div
+    id="menuPanel"
+    class="menu-panel">
+
+    <div class="menu-item">
+      🏍️ Rider Profile
+    </div>
+
+    <div class="menu-item">
+      ⭐ Saved Places
+    </div>
+
+    <div class="menu-item">
+      🧭 Navigation
+    </div>
+
+    <div class="menu-item">
+      ⚙️ Settings
+    </div>
+
+  </div>
+
+
+  <!-- ROUTE PANEL -->
+
+  <div
+    id="routePanel"
+    class="route-panel">
+
+    <h3 id="destinationTitle">
+      Destination
+    </h3>
+
+    <p id="routeInfo">
+      Enter a destination to begin.
+    </p>
+
+    <button
+      class="start-button"
+      onclick="startNavigation()">
+
+      START NAVIGATION
+
+    </button>
+
+  </div>
+
+
+  <!-- MAP CONTROLS -->
+
+  <div class="map-controls">
+
+    <button
+      class="map-button"
+      onclick="locateUser()"
+      title="My Location">
+
+      📍
+
+    </button>
+
+    <button
+      class="map-button"
+      onclick="zoomIn()"
+      title="Zoom In">
+
+      +
+
+    </button>
+
+    <button
+      class="map-button"
+      onclick="zoomOut()"
+      title="Zoom Out">
+
+      −
+
+    </button>
+
+  </div>
+
+
+  <!-- BOTTOM NAVIGATION -->
+
+  <div class="bottom-bar">
+
+    <div class="bottom-item active">
+
+      <span class="bottom-icon">
+        🗺️
+      </span>
+
+      Map
 
     </div>
 
-    <div class="controls">
 
-      <div class="control">
-        <button class="control-button">＋</button>
-        <div>Zoom</div>
-      </div>
+    <div
+      class="bottom-item"
+      onclick="showNavigation()">
 
-      <div class="control">
-        <button class="control-button">📍</button>
-        <div>Location</div>
-      </div>
+      <span class="bottom-icon">
+        🧭
+      </span>
 
-      <div class="control">
-        <button class="control-button">🧭</button>
-        <div>Navigate</div>
-      </div>
+      Navigate
 
-      <div class="control">
-        <button class="control-button">⚙️</button>
-        <div>Settings</div>
-      </div>
+    </div>
+
+
+    <div class="bottom-item">
+
+      <span class="bottom-icon">
+        ⭐
+      </span>
+
+      Favorites
+
+    </div>
+
+
+    <div class="bottom-item">
+
+      <span class="bottom-icon">
+        ⚙️
+      </span>
+
+      Settings
 
     </div>
 
   </div>
 
+
+  <!-- LEAFLET -->
+
+  <script
+    src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js">
+  </script>
+
+
+  <script>
+
+    /*
+     * ============================
+     * MOTOLINK MAP
+     * ============================
+     */
+
+    let map;
+
+    let userMarker = null;
+
+    let destinationMarker = null;
+
+
+    /*
+     * INITIALIZE MAP
+     */
+
+    map = L.map('map', {
+
+      zoomControl: false,
+
+      attributionControl: true
+
+    }).setView(
+      [20.5937, 78.9629],
+      5
+    );
+
+
+    /*
+     * OPENSTREETMAP
+     */
+
+    L.tileLayer(
+      'https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
+      {
+
+        maxZoom: 19,
+
+        attribution:
+          '&copy; OpenStreetMap contributors'
+
+      }
+    ).addTo(map);
+
+
+    /*
+     * ZOOM IN
+     */
+
+    function zoomIn() {
+
+      map.zoomIn();
+
+    }
+
+
+    /*
+     * ZOOM OUT
+     */
+
+    function zoomOut() {
+
+      map.zoomOut();
+
+    }
+
+
+    /*
+     * GET USER LOCATION
+     */
+
+    function locateUser() {
+
+      if (!navigator.geolocation) {
+
+        alert(
+          "GPS is not supported by this browser."
+        );
+
+        return;
+
+      }
+
+
+      navigator.geolocation.getCurrentPosition(
+
+        function(position) {
+
+          const latitude =
+            position.coords.latitude;
+
+          const longitude =
+            position.coords.longitude;
+
+
+          /*
+           * Remove old marker
+           */
+
+          if (userMarker) {
+
+            map.removeLayer(userMarker);
+
+          }
+
+
+          /*
+           * Create GPS marker
+           */
+
+          const gpsIcon =
+            L.divIcon({
+
+              className: '',
+
+              html:
+                '<div class="gps-marker"></div>',
+
+              iconSize: [22,22],
+
+              iconAnchor: [11,11]
+
+            });
+
+
+          userMarker =
+            L.marker(
+              [latitude, longitude],
+              { icon: gpsIcon }
+            ).addTo(map);
+
+
+          userMarker.bindPopup(
+            "<b>Your Location</b><br>" +
+            latitude.toFixed(6) +
+            ", " +
+            longitude.toFixed(6)
+          );
+
+
+          /*
+           * Move map to user
+           */
+
+          map.setView(
+            [latitude, longitude],
+            16
+          );
+
+
+        },
+
+        function(error) {
+
+          if (error.code === 1) {
+
+            alert(
+              "Location permission was denied."
+            );
+
+          } else {
+
+            alert(
+              "Unable to get your current location."
+            );
+
+          }
+
+        },
+
+        {
+
+          enableHighAccuracy: true,
+
+          timeout: 10000,
+
+          maximumAge: 0
+
+        }
+
+      );
+
+    }
+
+
+    /*
+     * SEARCH DESTINATION
+     *
+     * Uses OpenStreetMap Nominatim
+     */
+
+    function searchDestination(event) {
+
+      if (event.key !== "Enter") {
+
+        return;
+
+      }
+
+
+      const query =
+        document
+        .getElementById("searchInput")
+        .value
+        .trim();
+
+
+      if (query === "") {
+
+        return;
+
+      }
+
+
+      /*
+       * Nominatim search
+       */
+
+      const url =
+        "https://nominatim.openstreetmap.org/search" +
+        "?format=json" +
+        "&q=" +
+        encodeURIComponent(query) +
+        "&limit=1";
+
+
+      fetch(url)
+
+        .then(response =>
+          response.json()
+        )
+
+        .then(data => {
+
+          if (!data.length) {
+
+            alert(
+              "Destination not found."
+            );
+
+            return;
+
+          }
+
+
+          const result =
+            data[0];
+
+
+          const latitude =
+            parseFloat(result.lat);
+
+          const longitude =
+            parseFloat(result.lon);
+
+
+          /*
+           * Remove previous destination
+           */
+
+          if (destinationMarker) {
+
+            map.removeLayer(
+              destinationMarker
+            );
+
+          }
+
+
+          /*
+           * Destination marker
+           */
+
+          destinationMarker =
+            L.marker(
+              [latitude, longitude]
+            ).addTo(map);
+
+
+          destinationMarker.bindPopup(
+            "<b>Destination</b><br>" +
+            result.display_name
+          ).openPopup();
+
+
+          /*
+           * Move map
+           */
+
+          map.setView(
+            [latitude, longitude],
+            15
+          );
+
+
+          /*
+           * Show route panel
+           */
+
+          document
+            .getElementById("destinationTitle")
+            .innerText =
+              result.display_name;
+
+
+          document
+            .getElementById("routeInfo")
+            .innerText =
+              "Destination found. Start navigation when ready.";
+
+
+          document
+            .getElementById("routePanel")
+            .style.display =
+              "block";
+
+        })
+
+        .catch(error => {
+
+          console.error(error);
+
+          alert(
+            "Unable to search destination."
+          );
+
+        });
+
+    }
+
+
+    /*
+     * NAVIGATION PANEL
+     */
+
+    function showNavigation() {
+
+      document
+        .getElementById("routePanel")
+        .style.display =
+          "block";
+
+    }
+
+
+    /*
+     * START NAVIGATION
+     */
+
+    function startNavigation() {
+
+      if (!destinationMarker) {
+
+        alert(
+          "Please search for a destination first."
+        );
+
+        return;
+
+      }
+
+
+      alert(
+        "MotoLink navigation started!"
+      );
+
+    }
+
+
+    /*
+     * MENU
+     */
+
+    function toggleMenu() {
+
+      const menu =
+        document.getElementById(
+          "menuPanel"
+        );
+
+
+      if (
+        menu.style.display === "block"
+      ) {
+
+        menu.style.display =
+          "none";
+
+      } else {
+
+        menu.style.display =
+          "block";
+
+      }
+
+    }
+
+
+    /*
+     * CLOSE MENU WHEN CLICKING MAP
+     */
+
+    map.on(
+      'click',
+      function() {
+
+        document
+          .getElementById("menuPanel")
+          .style.display =
+            "none";
+
+      }
+    );
+
+
+  </script>
+
 </body>
 </html>
+```
